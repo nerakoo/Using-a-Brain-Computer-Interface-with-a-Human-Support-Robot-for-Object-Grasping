@@ -110,6 +110,7 @@ $$
 $$
 
 The resulting loss function is expressed as the combination of the two:
+
 $$
 \mathcal{L}_s = \mathcal{L}_{\text{cls}} + \lambda \mathcal{L}_{T-MSE}
 $$
@@ -172,6 +173,7 @@ The final processed data is shown in the figure:
 Top accuracy rate is selected as one of the evaluation indicators because it determines the final effect of the experiment. Since the model needs to predict two tasks (left hand or right hand, and the final action), the accuracy rate of the prediction with the highest possibility and the top two possibilities are selected as the final evaluation criteria.
 
  For K-fold cross-verification, K=4 is selected as the final evaluation criterion, and the final top accuracy is the average of the four training sessions.
+ 
 $$
 \text{Top}_1 = \frac{1}{4} \sum_{k=1}^{4} \text{Top}_1^k
 $$
@@ -181,9 +183,11 @@ $$
 $$
 
 Based on the recall rate, F-score, as a three-level indicator, is defined as:
+
 $$
 F_{\beta} = \frac{(\beta^2 + 1) PR}{\beta^2 \cdot P + R}
 $$
+
 Accuracy of model prediction:
 
 ![comp](.\image\comp.png)
