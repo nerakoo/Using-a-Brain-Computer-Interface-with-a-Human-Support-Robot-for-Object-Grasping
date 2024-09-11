@@ -72,7 +72,10 @@ $$
 
 In this paper, we use Temporal Convolutional Networks (TCN) to aggregate temporal information.
 
-$$ F(\hat{Z}^S_i) = \left( \hat{Z}^S_i *_{d} f \right) = \sum_{j=0}^{k-1} f(j) * \hat{Z}^S_{i-dj} $$
+$$ 
+F(\hat{Z}^S_i) = \left( \hat{Z}^S_i *_{d} f \right) = \sum_{j=0}^{k-1} f(j) \cdot \hat{Z}^S_{i-d \cdot j} 
+$$
+
 
 Based on the dilated convolution framework, this paper also uses residual connections to transfer information from the previous layer to the next layer. The operation of each layer can be described as follows:
 
