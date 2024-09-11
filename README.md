@@ -143,9 +143,9 @@ Top accuracy rate is selected as one of the evaluation indicators because it det
 ![for10](./image/for10.png)
 
 Based on the recall rate, F-score, as a three-level indicator, is defined as:
-$$
-F_{\beta} = \frac{(\beta^2 + 1) PR}{\beta^2 \cdot P + R}
-$$
+
+![for10](./image/for11.png)
+
 Accuracy of model prediction:
 
 ![comp](./image/comp.png)
