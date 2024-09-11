@@ -57,7 +57,7 @@ $$
 The formula for the Spatial Attention module is as follows:
 
 $$
-Y \in \mathbb{R}^{C^{(l-1)} \times M \times N} \rightarrow Y^{\#} \in \mathbb{R}^{C^{(l-1)} \times M \times N}
+Y \in \mathbb{R}^{C^{(l-1)} \times M \times N} \rightarrow Y^{\'} \in \mathbb{R}^{C^{(l-1)} \times M \times N}
 $$
 
 $$
