@@ -2,97 +2,189 @@
 
 
 
+## Methodology
+
+### Data Pre-processing
+
+In the data preprocessing stage, we perform two key operations to improve the quality and consistency of the dataset. Firstly, for different electrode signals in different EEG datasets, only the data of 14 key electrode positions corresponding to Epoc+ helmet were selected in this study: Af3 "and" F7 ", "F3", "Fc5", "T7 has", "what", "O1", "O2" and "P8", "T8", "Fc6", "F4", "F8", and "Af4", and to integrate these data for a large-scale labeled data set, for further analysis.
+
+#### Data normalization
+
+Secondly, to ensure unity across datasets, the min-max normalization method is used to standardize the feature data, and each feature value is scaled to the range of 0 to 1, which is calculated by the following formula:
+
+We use the following formula for data normalization:
+
+$$
+x'_i = \frac{x_i - \min(x_j) \quad (0 \leq j \leq n)}{\max(x_j) \quad (0 \leq j \leq n) - \min(x_j) \quad (0 \leq j \leq n)}
+$$
+
+#### Position encoding
+
+We use the following formula to define a unique label for each electrode:
+
+For the case where dimension i is even, we use the sin function:
+$$
+PE_{(pos, 2i)} = \sin \left( \frac{pos}{10000^{2i/d_{model}}} \right)
+$$
+For the case where dimension i is odd, we use the cos function:
+$$
+PE_{(pos, 2i+1)} = \cos \left( \frac{pos}{10000^{(2i+1)/d_{model}}} \right)
+$$
+The final electrode arrangement selected is as follows:
+
+![3.1](.\image\3.1.png)
 
 
 
+### Spatial-Temporal Attention Block
 
-## Dataset
+This is one of the main contributions of this paper, We propose an EEG-based control method that utilizes an innovative attention-based encoder/decoder TCNet framework for  parsing information features within users' brainwaves. These parsed features are then employed through an enhanced  classifier to achieve precise control over robotic actions. The integration of an attention mechanism enables our method  to automatically identify the most discriminative features for control,  thus ensuring good performance also across a variety of datasets and collection environments.
 
-##### a.Source
+#### Temporal Attention
 
-1. （important）[Motor Movement/Imagery Dataset](https://www.physionet.org/physiobank/database/eegmmidb/): Includes 109 volunteers, 64 electrodes, 2 baseline tasks (eye-open and eye-closed), motor movement, and motor imagery (both fists or both feet)
-2. （important）[Grasp and Lift EEG Challenge](https://www.kaggle.com/c/grasp-and-lift-eeg-detection/data): 12 subjects, 32channels@500Hz, for 6 grasp and lift events, namely a). HandStart b). FirstDigitTouch c). BothStartLoadPhase d). LiftOff e). Replace f). BothReleasedhttp://www2.hu-berlin.de/eyetracking-eeg/testdata.html)
-3. [BCI Competition IV-2a](http://www.bbci.de/competition/iv/#dataset2a): 22-electrode EEG motor-imagery dataset, with 9 subjects and 2 sessions, each with 288 four-second trials of imagined movements per subject. Includes movements of the left hand, the right hand, the feet and the tongue. [[Dataset Description\]](http://www.bbci.de/competition/iv/desc_2a.pdf)
-4. [High-Gamma Dataset](https://github.com/robintibor/high-gamma-dataset): 128-electrode dataset obtained from 14 healthy subjects with roughly 1000 four-second trials of executed movements divided into 13 runs per subject. The four classes of movements were movements of either the left hand, the right hand, both feet, and rest.
-5. [Left/Right Hand 1D/2D movements](https://sites.google.com/site/projectbci/): 19-electrode data of one subject with various combinations of 1D and 2D hand movements (actual execution).
-6. [Mental-Imagery Dataset](https://figshare.com/collections/A_large_electroencephalographic_motor_imagery_dataset_for_electroencephalographic_brain_computer_interfaces/3917698): 13 participants with over 60,000 examples of motor imageries in 4 interaction paradigms recorded with 38 channels medical-grade EEG system. It contains data for upto 6 mental imageries primarily for the motor movements. [[Article\]](https://www.nature.com/articles/sdata2018211#ref-CR57)http://suendermann.com/su/pdf/aihls2013.pdf)
+The formula for the Temporal Attention module is as follows:
+$$
+\text{Attn}(Q^{(l)}, K^{(l)}, V^{(l)}) = \text{Softmax}\left(A^{(l)}\right)V^{(l)}, \quad A^{(l)} = \frac{Q^{(l)}(K^{(l)})^{\mathsf{T}}}{\sqrt{d_h}} + A^{(l-1)}
+$$
 
+#### Spatial Attention
 
+The formula for the Spatial Attention module is as follows:
+$$
 
-##### b.details
+Y \in \mathbb{R}^{C^{(l-1)} \times M \times N} \rightarrow Y^{\#} \in \mathbb{R}^{C^{(l-1)} \times M \times N}
 
-Our needs:
+
+$$
 
-![image-20240305142638845](C:\Users\34049\AppData\Roaming\Typora\typora-user-images\image-20240305142638845.png)
+$$
+\text{Attn}(Q^{(l)}, K^{(l)}, V^{(l)}) = \text{Softmax}\left(\frac{(Q^{(l)}W_k^{(l)}) + (Q^{(l)}W_k^{(l)})^{\mathsf{T}}}{\sqrt{d_h}}\right)V^{(l)}
+$$
 
-###### b1:[Schalk, G., McFarland, D.J., Hinterberger, T., Birbaumer, N., Wolpaw, J.R. BCI2000: A General-Purpose Brain-Computer Interface (BCI) System. IEEE Transactions on Biomedical Engineering 51(6):1034-1043, 2004.](http://www.ncbi.nlm.nih.gov/pubmed/15188875)
-
-The data are provided here in EDF+ format (containing 64 EEG signals, each sampled at 160 samples per second, and an annotation channel). For use with PhysioToolkit software, [rdedfann](https://www.physionet.org/physiotools/wag/rdedfa-1.htm) generated a separate PhysioBank-compatible annotation file (with the suffix .event) for each recording. The .event files and the annotation channels in the corresponding .edf files contain identical data.
-
-In summary, the experimental runs were:
-
-1. Baseline, eyes open
-2. Baseline, eyes closed
-3. Task 1 (open and close left or right fist)
-4. Task 2 (imagine opening and closing left or right fist)
-5. Task 3 (open and close both fists or both feet)
-6. Task 4 (imagine opening and closing both fists or both feet)
-
-![image-20240305142608776](C:\Users\34049\AppData\Roaming\Typora\typora-user-images\image-20240305142608776.png)
-
-###### b2:Multimodal signal dataset for 11 intuitive movement tasks from single upper extremity during multiple recording sessions
-
-[Ji-Hoon Jeong](https://pubmed.ncbi.nlm.nih.gov/?term=Jeong JH[Author]), [Jeong-Hyun Cho](https://pubmed.ncbi.nlm.nih.gov/?term=Cho JH[Author]), [Kyung-Hwan Shim](https://pubmed.ncbi.nlm.nih.gov/?term=Shim KH[Author]), [Byoung-Hee Kwon](https://pubmed.ncbi.nlm.nih.gov/?term=Kwon BH[Author]), [Byeong-Hoo Lee](https://pubmed.ncbi.nlm.nih.gov/?term=Lee BH[Author]), [Do-Yeun Lee](https://pubmed.ncbi.nlm.nih.gov/?term=Lee DY[Author]), [Dae-Hyeok Lee](https://pubmed.ncbi.nlm.nih.gov/?term=Lee DH[Author]), and [Seong-Whan Lee](https://pubmed.ncbi.nlm.nih.gov/?term=Lee SW[Author])
-
-Arm-reaching along 6 directions: The participants were asked to perform multi-direction arm-reaching tasks directed from the center of their bodies outward. They performed the tasks along 6 different directions in 3D space: forward, backward, left, right, up, and down, as depicted in Fig. [3](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7539536/figure/fig3/). In the real-movement tasks, the participants extended their arms along 1 of the directions. The arm-reaching paradigm required 50 trials along each direction so that data could be collected for a total of 300 trials. However, in the MI tasks, the participants only imagined performing an arm-reaching task; the number of trials in the MI paradigm was the same as in the real-movement paradigm.
-
-Hand-grasping 3 objects: The participants were asked to grasp 3 objects of daily use via the corresponding grasping motions. They performed the 3 designated grasp motions by holding the objects, namely, card, ball, and cup, corresponding to lateral, spherical, and cylindrical grasp, respectively (see Fig. [3](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7539536/figure/fig3/)). In the real-movement tasks, we asked the participants to use their right hands to grasp a randomly selected object and hold it using its corresponding grasping motion. Eventually, we acquired data on 50 trials for each grasp, and hence, we collected 150 trials per participant. In the MI tasks, the participants performed only 1 of the 3 grasping motions per trial, randomly. The number of trials in the MI paradigm was the same as that in the real-movement paradigm.
-
-Wrist-twisting with 2 different motions: For the wrist-twisting tasks, the participants rotated their wrists to the left (pronation) and right (supination), as depicted in Fig. [3](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7539536/figure/fig3/). During real-movement task, each participant maintained his/her right hand in a neutral position with the elbow comfortably placed on the desk. Notably, wrist pronation and supination are complex actions used to decode user intentions from brain signals. Additionally, these movements are intuitive motions for realizing neurorehabilitation and prosthetic control [[31](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7539536/#bib31)]. We collected data for 50 trials per motion (i.e., total 100 trials) per day, and the visual cues were randomly displayed.
-
-Additionally, the participants were asked to participate in 3 recording sessions with a 1-week interval between each session. The experimental environment and protocols were the same for all 3 sessions. Consequently, we collected data from 3,300 trials (1,800 trials for arm-reaching, 900 for hand-grasping, and 600 for wrist-twisting) in all classes per participant, for both real-movement and MI paradigms.
-
-![image-20240305211601067](C:\Users\34049\AppData\Roaming\Typora\typora-user-images\image-20240305211601067.png)
+![Figure 3.2](.\image\Figure 3.2.png)
 
 
 
-![image-20240305211409256](C:\Users\34049\AppData\Roaming\Typora\typora-user-images\image-20240305211409256.png)
+### TCNet Block
 
-###### b3.EEG datasets for motor imagery brain–computerinterfaceHohyun Cho1, Minkyu Ahn2, Sangtae Ahn3, Moonyoung Kwon1and Sung Chan Jun1,∗
+In this paper, we use Temporal Convolutional Networks (TCN) to aggregate temporal information.
+$$
 
-data:http://gigadb.org/dataset/100295
+F(\hat{Z}^S_i) = \left( \hat{Z}^S_i *_{d}f \right) = \sum_{j=0}^{k-1} f(j) * \hat{Z}^S_{i-d*j}
+$$
+Based on the dilated convolution framework, this paper also uses residual connections to transfer information from the previous layer to the next layer. The operation of each layer can be described as follows:
 
-For each subject, we recorded data for non-task-related and task(MI)-related states, as follows: Six types of non-task-related data: We recorded 6 types ofnoise data (eye blinking, eyeball movement up/down, eyeball movement left/right, head movement, jaw clenching,and resting state) for 52 subjects. Each type of noise was collected twice for 5 seconds, except the resting state, whichwas recorded for 60 seconds. 
-
-Real hand movement: Before beginning the motor imageryexperiment, we asked subjects to conduct real hand movements. Subjects sat in a chair with armrests and watched amonitor. At the beginning of each trial, the monitor showeda black screen with a fixation cross for 2 seconds; the subjectwas then ready to perform hand movements (once the blackscreen gave a ready sign to the subject). As shown in Fig. 2,one of 2 instructions (“left hand” or “right hand”) appearedrandomly on the screen for 3 seconds, and subjects wereasked to move the appropriate hand depending on the instruction given. After the movement, when the blank screenreappeared, the subject was given a break for a random 4.1 to4.8 seconds. These processes were repeated 20 times for oneclass (one run), and one run was performed. 
-
-MI experiment: The MI experiment was conducted with thesame paradigm as the real hand movement experiment. Subjects were asked to imagine the hand movement dependingon the instruction given. Five or six runs were performed during the MI experiment. After each run, we calculated the classification accuracy over one run and gave the subject feedback to increase motivation. Between each run, a maximum4-minute break was given depending on the subject’s demands.
-
-![image-20240305220917953](C:\Users\34049\AppData\Roaming\Typora\typora-user-images\image-20240305220917953.png)
+![Figure 3.4](.\image\Figure 3.4.png)
 
 
 
-b4.https://www.kaggle.com/c/grasp-and-lift-eeg-detection/data
+### Loss Function
 
-## Code
+We adopted the cross-entropy loss function as the final loss function:
+$$
+\mathcal{L}_{\text{cls}} = \frac{1}{T} \sum_t -\log(y_{t,c})
+$$
+ To further enhance the quality of our predictions, we employ an additional smoothing loss to mitigate such over-segmentation
+errors. In this context, the following loss function is used as the smoothing loss.
+$$
+\mathcal{L}_{T-MSE} = \frac{1}{TC} \sum_{t,c} \hat{\Delta}^2_{t,c}
+$$
 
-#### 1.requirements
+$$
+\hat{\Delta}_{t,c} = 
+\begin{cases} 
+\Delta_{t,c} & \text{if } \Delta_{t,c} \leq \tau \\
+\tau & \text{otherwise}
+\end{cases}
+$$
 
-for data_loader.py
+$$
+\Delta_{t,c} = \left| \log y_{t,c} - \log y_{t-1,c} \right|
+$$
 
-```python
-pip install scipy pandas
-pip install pyarrow
-```
-
-
-
-
-
-```python
-pip install -U mne
-pip install mat4py
-```
-
+The resulting loss function is expressed as the combination of the two:
+$$
+\mathcal{L}_s = \mathcal{L}_{\text{cls}} + \lambda \mathcal{L}_{T-MSE}
+$$
 
 
+## Dataset and Equipment
+
+#### EPOC X
+
+The Epoc X headset, an advanced wireless EEG interface specifically designed to capture research-level EEG data, was used as the experimental device in this paper.
+
+![Figure 4.1](.\image\Figure 4.1.png)
+
+#### Tiago Robot
+
+In our research, the TIAGO robot by PAL Robotics played an integral role as the primary experimental apparatus, tasked with the execution of motive actions derived from EEG signals.
+
+![Figure 4.2](.\image\Figure 4.2.jpg)
+
+
+
+#### Dataset
+
+EEG Motor Movement/Imagery Dataset: This dataset consists of more than 1500 electroencephalogram (EEG) recordings of between one and two minutes in duration from 109 volunteers, captured using the BCI2000 system. The recordings included a variety of motor/imagery tasks that performed and imagined the opening and closing of the hand, fist, and foot movements. Baseline states were also recorded when the participant opened and closed his eyes. The dataset was provided by the BCI R&D Program team at the Wadsworth Center of the New York State Department of Health with a grant from the National Institutes of Health/National Institute of Biomedical Imaging and Bioengineering.
+
+Grasp and Lift EEG Challenge: The dataset consists of EEG recordings from 12 subjects while performing six specific grasping and lifting movements subdivided into hand onset movement, first touch, two-hand onset loading phase, lifting, replacement, and two-hand release. Subjects also performed a multi-directional arm extension task in six different spatial directions: front, back, left, right, up, and down, 50 times in each direction, for a total of 300 actual motion data. For the motor imagery (MI) task, subjects were asked to imagine performing the same action, ensuring that the actual action was consistent with the number of trials of the imagined task. In addition, data containing three grasps of everyday objects and two wrist-twisting movements were also collected, each with 50 movements, providing 150 grasps and 100 wrist-twisting movements for each subject.
+
+
+
+## Experimental procedures
+
+The experiment consisted of four parts. First, we used the EPOC X helmet to collect electroencephalogram (EEG) signals from the participant. Next, we preprocessed the collected EEG signals. Then, we used Attention-based TCNet to analyze the processed EEG signals. Finally, based on the analyzed data, we used ROS to control the robot arm to grasp the object. The diagram of the experimental process is shown below:
+
+![Figure 4.3](.\image\Figure 4.3.png)
+
+## Experimental result:
+
+#### Data processing:
+
+The final processed data is shown in the figure:
+
+![Figure 4.4A](.\image\Figure 4.4A.png)
+
+![Figure 4.4B](.\image\Figure 4.4B.png)
+
+#### Experimental scene:
+
+![Figure A4](.\image\Figure A4.png)
+
+![Figure A5](.\image\Figure A5.png)
+
+![Figure A6](.\image\Figure A6.png)
+
+
+
+## Evaluation
+
+#### Accuracy of model prediction:
+
+Top accuracy rate is selected as one of the evaluation indicators because it determines the final effect of the experiment. Since the model needs to predict two tasks (left hand or right hand, and the final action), the accuracy rate of the prediction with the highest possibility and the top two possibilities are selected as the final evaluation criteria.
+
+ For K-fold cross-verification, K=4 is selected as the final evaluation criterion, and the final top accuracy is the average of the four training sessions.
+$$
+\text{Top}_1 = \frac{1}{4} \sum_{k=1}^{4} \text{Top}_1^k
+$$
+
+$$
+\text{Top}_2 = \frac{1}{4} \sum_{k=1}^{4} \text{Top}_2^k
+$$
+
+Based on the recall rate, F-score, as a three-level indicator, is defined as:
+$$
+F_{\beta} = \frac{(\beta^2 + 1) PR}{\beta^2 \cdot P + R}
+$$
+Accuracy of model prediction:
+
+![comp](.\image\comp.png)
+
+#### Ablation experiments:
+
+![Ab1](.\image\Ab1.png)
+
+
+
+![Ab2](.\image\Ab2.png)
