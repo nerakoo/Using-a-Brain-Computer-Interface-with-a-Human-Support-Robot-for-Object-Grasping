@@ -72,8 +72,8 @@ $$
 
 In this paper, we use Temporal Convolutional Networks (TCN) to aggregate temporal information.
 
-$$ 
-F(\hat{Z}^S_i) = \left( \hat{Z}^S_i *_{d} f \right) = \sum_{j=0}^{k-1} f(j) \cdot \hat{Z}^S_{i-d \cdot j} 
+$$
+F(\hat{Z}^S_i) = \left( \hat{Z}^S_i *_{d}f \right) = \sum_{j=0}^{k-1} f(j) * \hat{Z}^S_{i-d*j}
 $$
 
 
