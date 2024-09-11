@@ -44,7 +44,7 @@ This is one of the main contributions of this paper, We propose an EEG-based con
 
 The formula for the Temporal Attention module is as follows:
 $$
-\text{Attn}(Q^{(l)}, K^{(l)}, V^{(l)}) = \text{Softmax}\left(A^{(l)}\right)V^{(l)}, \quad A^{(l)} = \frac{Q^{(l)}(K^{(l)})^{\mathsf{T}}}{\sqrt{d_h}} + A^{(l-1)}
+{\text{Attn}(Q^{(l)}, K^{(l)}, V^{(l)}) = \text{Softmax}\left(A^{(l)}\right)V^{(l)}, \quad A^{(l)} = \frac{Q^{(l)}(K^{(l)})^{\mathsf{T}}}{\sqrt{d_h}} + A^{(l-1)}}
 $$
 
 #### Spatial Attention
@@ -52,7 +52,6 @@ $$
 The formula for the Spatial Attention module is as follows:
 $$
 Y \in \mathbb{R}^{C^{(l-1)} \times M \times N} \rightarrow Y^{\#} \in \mathbb{R}^{C^{(l-1)} \times M \times N}
-
 $$
 
 $$
