@@ -23,17 +23,13 @@ $$
 We use the following formula to define a unique label for each electrode:
 
 For the case where dimension i is even, we use the sin function:
-
 $$
 PE_{(pos, 2i)} = \sin \left( \frac{pos}{10000^{2i/d_{model}}} \right)
 $$
-
 For the case where dimension i is odd, we use the cos function:
-
 $$
 PE_{(pos, 2i+1)} = \cos \left( \frac{pos}{10000^{(2i+1)/d_{model}}} \right)
 $$
-
 The final electrode arrangement selected is as follows:
 
 ![3.1](.\image\3.1.png)
@@ -47,7 +43,6 @@ This is one of the main contributions of this paper, We propose an EEG-based con
 #### Temporal Attention
 
 The formula for the Temporal Attention module is as follows:
-
 $$
 \text{Attn}(Q^{(l)}, K^{(l)}, V^{(l)}) = \text{Softmax}\left(A^{(l)}\right)V^{(l)}, \quad A^{(l)} = \frac{Q^{(l)}(K^{(l)})^{\mathsf{T}}}{\sqrt{d_h}} + A^{(l-1)}
 $$
@@ -55,9 +50,10 @@ $$
 #### Spatial Attention
 
 The formula for the Spatial Attention module is as follows:
-
 $$
-Y \in \mathbb{R}^{C^{(l-1)} \times M \times N} \rightarrow Y^{\'} \in \mathbb{R}^{C^{(l-1)} \times M \times N}
+Y \in \mathbb{R}^{C^{(l-1)} \times M \times N} \rightarrow Y^{\#} \in \mathbb{R}^{C^{(l-1)} \times M \times N}
+
+
 $$
 
 $$
@@ -71,12 +67,9 @@ $$
 ### TCNet Block
 
 In this paper, we use Temporal Convolutional Networks (TCN) to aggregate temporal information.
-
 $$
 F(\hat{Z}^S_i) = \left( \hat{Z}^S_i *_{d}f \right) = \sum_{j=0}^{k-1} f(j) * \hat{Z}^S_{i-d*j}
 $$
-
-
 Based on the dilated convolution framework, this paper also uses residual connections to transfer information from the previous layer to the next layer. The operation of each layer can be described as follows:
 
 ![Figure 3.4](.\image\Figure 3.4.png)
@@ -86,14 +79,11 @@ Based on the dilated convolution framework, this paper also uses residual connec
 ### Loss Function
 
 We adopted the cross-entropy loss function as the final loss function:
-
 $$
 \mathcal{L}_{\text{cls}} = \frac{1}{T} \sum_t -\log(y_{t,c})
 $$
-
  To further enhance the quality of our predictions, we employ an additional smoothing loss to mitigate such over-segmentation
 errors. In this context, the following loss function is used as the smoothing loss.
-
 $$
 \mathcal{L}_{T-MSE} = \frac{1}{TC} \sum_{t,c} \hat{\Delta}^2_{t,c}
 $$
@@ -111,7 +101,6 @@ $$
 $$
 
 The resulting loss function is expressed as the combination of the two:
-
 $$
 \mathcal{L}_s = \mathcal{L}_{\text{cls}} + \lambda \mathcal{L}_{T-MSE}
 $$
@@ -174,7 +163,6 @@ The final processed data is shown in the figure:
 Top accuracy rate is selected as one of the evaluation indicators because it determines the final effect of the experiment. Since the model needs to predict two tasks (left hand or right hand, and the final action), the accuracy rate of the prediction with the highest possibility and the top two possibilities are selected as the final evaluation criteria.
 
  For K-fold cross-verification, K=4 is selected as the final evaluation criterion, and the final top accuracy is the average of the four training sessions.
- 
 $$
 \text{Top}_1 = \frac{1}{4} \sum_{k=1}^{4} \text{Top}_1^k
 $$
@@ -184,11 +172,9 @@ $$
 $$
 
 Based on the recall rate, F-score, as a three-level indicator, is defined as:
-
 $$
 F_{\beta} = \frac{(\beta^2 + 1) PR}{\beta^2 \cdot P + R}
 $$
-
 Accuracy of model prediction:
 
 ![comp](.\image\comp.png)
