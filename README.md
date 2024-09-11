@@ -32,7 +32,7 @@ PE_{(pos, 2i+1)} = \cos \left( \frac{pos}{10000^{(2i+1)/d_{model}}} \right)
 $$
 The final electrode arrangement selected is as follows:
 
-![3.1](.\image\3.1.png)
+![3.1](./image/3.1.png)
 
 
 
@@ -53,14 +53,13 @@ The formula for the Spatial Attention module is as follows:
 $$
 Y \in \mathbb{R}^{C^{(l-1)} \times M \times N} \rightarrow Y^{\#} \in \mathbb{R}^{C^{(l-1)} \times M \times N}
 
-
 $$
 
 $$
 \text{Attn}(Q^{(l)}, K^{(l)}, V^{(l)}) = \text{Softmax}\left(\frac{(Q^{(l)}W_k^{(l)}) + (Q^{(l)}W_k^{(l)})^{\mathsf{T}}}{\sqrt{d_h}}\right)V^{(l)}
 $$
 
-![Figure 3.2](.\image\Figure 3.2.png)
+![Figure 3.2](./image/Figure 3.2.png)
 
 
 
@@ -72,7 +71,7 @@ F(\hat{Z}^S_i) = \left( \hat{Z}^S_i *_{d}f \right) = \sum_{j=0}^{k-1} f(j) * \ha
 $$
 Based on the dilated convolution framework, this paper also uses residual connections to transfer information from the previous layer to the next layer. The operation of each layer can be described as follows:
 
-![Figure 3.4](.\image\Figure 3.4.png)
+![Figure 3.4](./image/Figure 3.4.png)
 
 
 
@@ -112,13 +111,13 @@ $$
 
 The Epoc X headset, an advanced wireless EEG interface specifically designed to capture research-level EEG data, was used as the experimental device in this paper.
 
-![Figure 4.1](.\image\Figure 4.1.png)
+![Figure 4.1](./image/Figure 4.1.png)
 
 #### Tiago Robot
 
 In our research, the TIAGO robot by PAL Robotics played an integral role as the primary experimental apparatus, tasked with the execution of motive actions derived from EEG signals.
 
-![Figure 4.2](.\image\Figure 4.2.jpg)
+![Figure 4.2](./image/Figure 4.2.jpg)
 
 
 
@@ -134,7 +133,7 @@ Grasp and Lift EEG Challenge: The dataset consists of EEG recordings from 12 sub
 
 The experiment consisted of four parts. First, we used the EPOC X helmet to collect electroencephalogram (EEG) signals from the participant. Next, we preprocessed the collected EEG signals. Then, we used Attention-based TCNet to analyze the processed EEG signals. Finally, based on the analyzed data, we used ROS to control the robot arm to grasp the object. The diagram of the experimental process is shown below:
 
-![Figure 4.3](.\image\Figure 4.3.png)
+![Figure 4.3](./image/Figure 4.3.png)
 
 ## Experimental result:
 
@@ -142,17 +141,17 @@ The experiment consisted of four parts. First, we used the EPOC X helmet to coll
 
 The final processed data is shown in the figure:
 
-![Figure 4.4A](.\image\Figure 4.4A.png)
+![Figure 4.4A](./image/Figure 4.4A.png)
 
-![Figure 4.4B](.\image\Figure 4.4B.png)
+![Figure 4.4B](./image/Figure 4.4B.png)
 
 #### Experimental scene:
 
-![Figure A4](.\image\Figure A4.png)
+![Figure A4](./image/Figure A4.png)
 
-![Figure A5](.\image\Figure A5.png)
+![Figure A5](./image/Figure A5.png)
 
-![Figure A6](.\image\Figure A6.png)
+![Figure A6](./image/Figure A6.png)
 
 
 
@@ -177,12 +176,12 @@ F_{\beta} = \frac{(\beta^2 + 1) PR}{\beta^2 \cdot P + R}
 $$
 Accuracy of model prediction:
 
-![comp](.\image\comp.png)
+![comp](./image/comp.png)
 
 #### Ablation experiments:
 
-![Ab1](.\image\Ab1.png)
+![Ab1](./image/Ab1.png)
 
 
 
-![Ab2](.\image\Ab2.png)
+![Ab2](./image/Ab2.png)
